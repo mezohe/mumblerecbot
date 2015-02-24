@@ -137,15 +137,15 @@ class MumbleRecBot:
         message = message_obj.message
         
 #TODO: check if message is sent only to me
-        if message == "/start":  # force the recording
+        if message in ("/start", "vreji: ko ru'i cupra"):  # force the recording
             self.force_start = True
             self.force_stop = False
-            self.mumble.users.myself.comment("se bapli rejri'a" + COMMENT_SUFFIX)
-        elif message == "/stop":  # prevent the recording
+            self.mumble.users.myself.comment("ca'o se bapli zbasu" + COMMENT_SUFFIX)
+        elif message in ("/stop", "vreji: ko na jundi"):  # prevent the recording
             self.force_start = False
             self.force_stop = True
-            self.mumble.users.myself.comment("se bapli na rejri'a" + COMMENT_SUFFIX)
-        elif message == "/auto":  # go in auto mode
+            self.mumble.users.myself.comment("ca'o se bapli zbasu be na ku" + COMMENT_SUFFIX)
+        elif message in ("/auto", "vreji: ko zmiku"):  # go in auto mode
             self.force_start = False
             self.force_stop = False
             self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
@@ -155,10 +155,10 @@ class MumbleRecBot:
             self.force_start = False
             self.force_stop = False
             self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
-        elif message == "/newfile":  # stop the current audio file and start a new one
+        elif message in ("/newfile", "vreji: ko katna"):  # stop the current audio file and start a new one
             self.force_newfile = True
             self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
-        elif message == "/exit":  # Stop the application
+        elif message in ("/exit", "vreji: ko morsi"):  # Stop the application
             self.exit = True
         elif message == "/gamestart":  # signal a game start to be recorded in the chapter webvtt file
             if self.chapters is not None and time.time()-self.last_chapter_time > CHAPTER_MIN_INTERVAL:
