@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 
 #Global pymumble debugging (lot of output)
-DEBUG = False
+DEBUG = True
 
 #send encoder STDOUT/STDERR to the console
 DEBUG_ENCODER = True
 
 #Creates the caption and chapter webvtt files
 CREATE_WEBVTT = True
+CREATE_CHAPTERS = False
 
-SAVEDIR = "c:\\temp"  # folder where to save the recordings
+SAVEDIR = "/Mumble"  # folder where to save the recordings
 BUFFER = 0.1  # time to buffer audio input
-PIDFILE = "c:\\temp\\mumblerecbot.pid"  # location to store the process id
+PIDFILE = "/home/vic/mumblerecbot.pid"  # location to store the process id
 
-HOST = "localhost"  # murmur server
+HOST = "mumble.metal-bunker.info"  # murmur server
 PORT = 64738  # murmur port
-USER = "recorder"  # mumur user
-PASSWORD = "recorder"  # mumur user
-CHANNEL = ""  # channel to move in ("" = root)
+USER = "vreji"  # mumur user
+PASSWORD = ""  # mumur user
+CHANNEL = "lojban"  # channel to move in ("" = root)
 
-USER_COUNT = 2  # start to record with how many connected users (recorder not included)
+USER_COUNT = 1  # start to record with how many connected users (recorder not included)
 
 # Create a stereo difference based on the channel the user is in, when playing with teams taht can't ear each other
 # region is the same for the subtitle webvtt file
@@ -36,18 +37,19 @@ MONO_CHUNK_SIZE = BITRATE * 2 * RESOLUTION / 1000
 STEREO_CHUNK_SIZE = MONO_CHUNK_SIZE * 2 
 
 # command to send the audio in a pipe for external encoding. %s will be replaced by a generated name
-#ENCODER = "/usr/bin/oggenc --raw --raw-bits=16 --raw-chan=2 --raw-rate=48000 --quality=4 --quiet -o %s.ogg -"  
+ENCODER = "oggenc --raw --raw-bits=16 --raw-chan=2 --raw-rate=48000 --quality=4 --quiet -o %s.ogg -"  
 #ENCODER = "oggenc2 --raw --raw-bits=16 --raw-chan=2 --raw-rate=48000 --quality=4 --quiet -o %s.ogg -"
-ENCODER = "ffmpeg -f s16le -ar 48000 -ac 2 -i - -c:a libmp3lame -ab 96k -ac 1 -ar 22050 -f rtp rtp://localhost:1935/"
+#ENCODER = "ffmpeg -f s16le -ar 48000 -ac 2 -i - -c:a libmp3lame -ab 96k -ac 1 -ar 22050 -f rtp rtp://localhost:1935/"
 
 # comment to be shown in mumble for the recorder user
-COMMENT_SUFFIX = "<br>/start:forced" + \
-                 "<br>/stop:blocked" + \
-                 "<br>/auto[=x]:Automatic start-stop (when x users connected)" + \
-                 "<br>/newfile:new audio file" + \
-                 "<br>/exit:disconnect" + \
-                 "<br>/gamestart:Create a game chapter" + \
-                 "<br>/gamestop:Finish a game chapter" 
+COMMENT_SUFFIX = " .i kakne co cpacu lo vreji la'o zoi. http://zbaga.ax.lt/Mumble/ .zoi"
+#COMMENT_SUFFIX = "<br>/start:forced" + \
+#                 "<br>/stop:blocked" + \
+#                 "<br>/auto[=x]:Automatic start-stop (when x users connected)" + \
+#                 "<br>/newfile:new audio file" + \
+#                 "<br>/exit:disconnect" + \
+#                 "<br>/gamestart:Create a game chapter" + \
+#                 "<br>/gamestop:Finish a game chapter" 
 
 # The user's avater is used to see if it is recording in the overlay
 START_BITMAP = "start.png"
@@ -56,3 +58,4 @@ STOP_BITMAP = "stop.png"
 # prevent to create multiple chapters too fast
 CHAPTER_MIN_INTERVAL = 10
 
+autotext = "vreji zmiku .i ca lo nu su'o %i da jorne cu ca'o snaveizba"

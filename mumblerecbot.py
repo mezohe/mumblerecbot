@@ -44,7 +44,7 @@ class MumbleRecBot:
         self.mumble.callbacks.set_callback(PYMUMBLE_CLBK_USERCREATED, self.user_created)
         self.mumble.callbacks.set_callback(PYMUMBLE_CLBK_USERUPDATED, self.user_modified)
         self.mumble.callbacks.set_callback(PYMUMBLE_CLBK_USERREMOVED, self.user_removed)
-        self.mumble.callbacks.set_callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, self.message_received)
+        self.mumble.callbacks.set_callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVEDFULL, self.message_received)
     
         self.mumble.start()  # start the mumble thread
         self.mumble.is_ready()  # wait for the end of the connection process
@@ -60,9 +60,9 @@ class MumbleRecBot:
             self.set_user_stereo(user["session"])
             if "name" in user and user["name"] != USER:
                 if self.captions is not None:
-                    self.captions.add_cue("<c.system>User {user} connected".format(user=user["name"]), duration=2)
+                    self.captions.add_cue("<c.system>la'oi {user} co'a jorne".format(user=user["name"]), duration=2)
                 if self.chapters is not None:
-                    self.chapters.add_cue("<c.system>{user} connected".format(user=user["name"]), region="timestamp", duration=0)
+                    self.chapters.add_cue("<c.system>la'oi {user} co'a jorne".format(user=user["name"]), region="timestamp", duration=0)
         
         if "name" in user:
             self.users[user["session"]]["name"] = user["name"]
@@ -87,17 +87,26 @@ class MumbleRecBot:
             if "channel_id" not in self.users[user["session"]] or self.users[user["session"]]["channel_id"] != user["channel_id"]:
                 self.set_user_stereo(user["session"], user["channel_id"])
                 if self.captions is not None and "name" in self.users[user["session"]]:
-                    self.captions.add_cue("<c.system>User {user} moved to channel {channel}".format(user=self.users[user["session"]]["name"], channel=self.mumble.channels[user["channel_id"]]["name"]), duration=2)
+                    self.captions.add_cue("<c.system>la'oi {user} klama la'oi {channel} noi kumfa".format(user=self.users[user["session"]]["name"], channel=self.mumble.channels[user["channel_id"]]["name"]), duration=2)
                 self.users[user["session"]]["channel_id"] = user["channel_id"]
             
         if "self_mute" in actions:
             if "self_mute" not in self.users[user["session"]] or self.users[user["session"]]["self_mute"] != user["self_mute"]:
                 if self.captions is not None and "name" in self.users[user["session"]]:
                     if user["self_mute"]:
-                        self.captions.add_cue("<c.system>User {user} muted himself".format(user=self.users[user["session"]]["name"]), duration=2)
+                        self.captions.add_cue("<c.system>la'oi {user} co'u cradi".format(user=self.users[user["session"]]["name"]), duration=2)
                     else:
-                        self.captions.add_cue("<c.system>User {user} unmuted himself".format(user=self.users[user["session"]]["name"]), duration=2)
+                        self.captions.add_cue("<c.system>la'oi {user} co'a cradi".format(user=self.users[user["session"]]["name"]), duration=2)
                 self.users[user["session"]]["self_mute"] = user["self_mute"]
+        
+        if "self_deaf" in actions:
+            if "self_deaf" not in self.users[user["session"]] or self.users[user["session"]]["self_deaf"] != user["self_deaf"]:
+                if self.captions is not None and "name" in self.users[user["session"]]:
+                    if user["self_deaf"]:
+                        self.captions.add_cue("<c.system>la'oi {user} co'u tinju'i".format(user=self.users[user["session"]]["name"]), duration=2)
+                    else:
+                        self.captions.add_cue("<c.system>la'oi {user} co'a tinju'i".format(user=self.users[user["session"]]["name"]), duration=2)
+                self.users[user["session"]]["self_deaf"] = user["self_deaf"]
             
         self.test_for_users()
             
@@ -105,46 +114,50 @@ class MumbleRecBot:
         """a user has disconnected"""
         if "name" in self.users[user["session"]]:
             if self.captions is not None:
-                self.captions.add_cue("<c.system>User {user} disconnected".format(user=self.users[user["session"]]["name"]), duration=2)
+                self.captions.add_cue("<c.system>la'oi {user} co'u jorne".format(user=self.users[user["session"]]["name"]), duration=2)
             if self.chapters is not None:
-                self.chapters.add_cue("<c.system>{user} disconnected".format(user=user["name"]), region="timestamp", duration=0)
+                self.chapters.add_cue("<c.system>la'oi {user} co'u jorne".format(user=user["name"]), region="timestamp", duration=0)
         del self.users[user["session"]]
         self.test_for_users()
     
     def test_for_users(self):
         """check the number of connected users to start/stop the recording"""
-        if self.mumble.users.count() > USER_COUNT:
+        attending = [user for user in self.mumble.users.values() if (not "self_mute" in user or not user["self_mute"]) and (not "self_deaf" in user or not user["self_deaf"])]
+        if len(attending) > USER_COUNT:
             self.recording = True
         else:
             self.recording = False
     
-    def message_received(self, message):
+    def message_received(self, message_obj):
         """receive a text message from the server"""
         from re import match
         
         global USER_COUNT
+        user_count = USER_COUNT + 1
+        message = message_obj.message
         
 #TODO: check if message is sent only to me
         if message == "/start":  # force the recording
             self.force_start = True
             self.force_stop = False
-            self.mumble.users.myself.comment("Recording forced." + COMMENT_SUFFIX)
+            self.mumble.users.myself.comment("se bapli rejri'a" + COMMENT_SUFFIX)
         elif message == "/stop":  # prevent the recording
             self.force_start = False
             self.force_stop = True
-            self.mumble.users.myself.comment("Recording blocked." + COMMENT_SUFFIX)
+            self.mumble.users.myself.comment("se bapli na rejri'a" + COMMENT_SUFFIX)
         elif message == "/auto":  # go in auto mode
             self.force_start = False
             self.force_stop = False
-            self.mumble.users.myself.comment("Auto mode (starting with %i users)." % USER_COUNT + COMMENT_SUFFIX)
+            self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
         elif match("^/auto=\d+$", message):  # go in auto mode and change the connected users threshold
             USER_COUNT=int(message.split("=")[1])
+            user_count = USER_COUNT + 1
             self.force_start = False
             self.force_stop = False
-            self.mumble.users.myself.comment("Auto mode (starting with %i users)." % USER_COUNT + COMMENT_SUFFIX)
+            self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
         elif message == "/newfile":  # stop the current audio file and start a new one
             self.force_newfile = True
-            self.mumble.users.myself.comment("Auto mode (starting with %i users)." % USER_COUNT + COMMENT_SUFFIX)
+            self.mumble.users.myself.comment(autotext % user_count + COMMENT_SUFFIX)
         elif message == "/exit":  # Stop the application
             self.exit = True
         elif message == "/gamestart":  # signal a game start to be recorded in the chapter webvtt file
@@ -168,6 +181,9 @@ class MumbleRecBot:
             text = text[:50]
             if self.chapters is not None:
                 self.chapters.add_cue(text, region="timestamp", duration=0)
+        else:
+            if self.captions is not None:
+                self.captions.add_cue("<v {user}>sei la'oi {user} ciska se'u {message}".format(user=self.users[message_obj.actor]["name"], message=message), duration=8)
    
     def loop(self):
         """Master loop""" 
@@ -176,7 +192,7 @@ class MumbleRecBot:
         
         silent = "\x00" * STEREO_CHUNK_SIZE
         
-        self.mumble.users.myself.comment("Auto mode (starting with %i users)." % USER_COUNT + COMMENT_SUFFIX)
+        self.mumble.users.myself.comment(autotext % (USER_COUNT + 1) + COMMENT_SUFFIX)
         self.mumble.users.myself.texture(self.load_bitmap(STOP_BITMAP))
         
         while self.mumble.is_alive() and not self.exit:
@@ -192,7 +208,8 @@ class MumbleRecBot:
                     self.audio_file = AudioFile(audio_file_name)
                     
                     if CREATE_WEBVTT:
-                        self.chapters = webvtt.WebVtt(audio_file_name + "-chapters.vtt")
+                        if CREATE_CHAPTERS:
+                            self.chapters = webvtt.WebVtt(audio_file_name + "-chapters.vtt")
                         self.captions = webvtt.WebVtt(
                                             audio_file_name + "-captions.vtt",
                                             regions=[
@@ -204,7 +221,7 @@ class MumbleRecBot:
                         for user in self.mumble.users.values():
                             if user["name"] != USER:
                                 usernames.append(user["name"])
-                        title = "<c.system>Recording started with users {users}".format(users=",".join(usernames))
+                        title = "<c.system>co'a veizba sei la'e di'e zvati fa'o {users}".format(users=",".join(usernames))
                         self.captions.add_cue(title, duration=2)
 
                 if self.cursor_time < time.time() - BUFFER:  # it's time to check audio
