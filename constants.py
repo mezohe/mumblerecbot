@@ -42,7 +42,7 @@ ENCODER = "oggenc --raw --raw-bits=16 --raw-chan=2 --raw-rate=48000 --quality=4 
 #ENCODER = "ffmpeg -f s16le -ar 48000 -ac 2 -i - -c:a libmp3lame -ab 96k -ac 1 -ar 22050 -f rtp rtp://localhost:1935/"
 
 # comment to be shown in mumble for the recorder user
-COMMENT_SUFFIX = " .i kakne co cpacu lo vreji la'o zoi. http://zbaga.ax.lt/mumble/ .zoi"
+COMMENT_SUFFIX = " .i kakne co cpacu lo vreji la'o zoi. <a href=\"http://zbaga.ax.lt/mumble/\">http://zbaga.ax.lt/mumble/</a> .zoi"
 #COMMENT_SUFFIX = "<br>/start:forced" + \
 #                 "<br>/stop:blocked" + \
 #                 "<br>/auto[=x]:Automatic start-stop (when x users connected)" + \

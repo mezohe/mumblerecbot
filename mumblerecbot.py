@@ -48,7 +48,8 @@ class MumbleRecBot:
     
         self.mumble.start()  # start the mumble thread
         self.mumble.is_ready()  # wait for the end of the connection process
-        self.mumble.channels.find_by_name(CHANNEL).move_in()  # move to the configured channel
+        self.home_channel = self.mumble.channels.find_by_name(CHANNEL)
+        self.home_channel.move_in()  # move to the configured channel
         self.mumble.users.myself.mute()  # mute the user (just to make clear he don't speak)
     
         self.loop()
@@ -122,7 +123,11 @@ class MumbleRecBot:
     
     def test_for_users(self):
         """check the number of connected users to start/stop the recording"""
-        attending = [user for user in self.mumble.users.values() if (not "self_mute" in user or not user["self_mute"]) and (not "self_deaf" in user or not user["self_deaf"])]
+        try:
+            attending = [user for user in self.mumble.users.values() if (not "self_mute" in user or not user["self_mute"]) and (not "self_deaf" in user or not user["self_deaf"]) and ("channel_id" in user and user["channel_id"] == self.home_channel["channel_id"])]
+        except AttributeError:
+            return
+            
         if len(attending) > USER_COUNT:
             self.recording = True
         else:
