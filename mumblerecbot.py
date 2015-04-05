@@ -188,7 +188,7 @@ class MumbleRecBot:
                 self.chapters.add_cue(text, region="timestamp", duration=0)
         else:
             if self.captions is not None:
-                self.captions.add_cue("<v {user}>sei la'oi {user} ciska se'u {message}".format(user=self.users[message_obj.actor]["name"], message=message), duration=8)
+                self.captions.add_cue(u"<v {user}>sei la'oi {user} ciska se'u {message}".format(user=self.users[message_obj.actor]["name"], message=message), duration=8)
    
     def loop(self):
         """Master loop""" 
@@ -293,7 +293,7 @@ class MumbleRecBot:
                     self.captions = None    
             
                 self.force_newfile = False   
-                time.sleep(0.5)
+                time.sleep(0.2)
 
                     
     def add_sound(self, s1, s2):

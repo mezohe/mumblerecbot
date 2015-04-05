@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #Global pymumble debugging (lot of output)
-DEBUG = False
+DEBUG = True
 
 #send encoder STDOUT/STDERR to the console
 DEBUG_ENCODER = True
