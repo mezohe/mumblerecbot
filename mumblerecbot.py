@@ -22,6 +22,7 @@ class MumbleRecBot:
 
         pid = str(getpid())
         file(PIDFILE,'w').write("%s\n" % pid)  # store the process id
+        self.simplelog = open("/tmp/mumble.simplelog", "a")
 
         self.recording = False  # recording ongoing"
         self.audio_file = None  # output audio_file
@@ -67,6 +68,8 @@ class MumbleRecBot:
         
         if "name" in user:
             self.users[user["session"]]["name"] = user["name"]
+            self.simplelog.write("+ " + user["name"] + "\n");
+            self.simplelog.flush();
             
         if "channel_id" in user:
             self.users[user["session"]]["channel_id"] = user["channel_id"]
@@ -118,6 +121,8 @@ class MumbleRecBot:
                 self.captions.add_cue("<c.system>la'oi {user} co'u jorne".format(user=self.users[user["session"]]["name"]), duration=2)
             if self.chapters is not None:
                 self.chapters.add_cue("<c.system>la'oi {user} co'u jorne".format(user=user["name"]), region="timestamp", duration=0)
+            self.simplelog.write("- " + user["name"] + "\n");
+            self.simplelog.flush();
         del self.users[user["session"]]
         self.test_for_users()
     

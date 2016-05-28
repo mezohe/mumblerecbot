@@ -14,11 +14,12 @@ SAVEDIR = "/Mumble"  # folder where to save the recordings
 BUFFER = 0.1  # time to buffer audio input
 PIDFILE = "/tmp/mumblerecbot.pid"  # location to store the process id
 
-HOST = "mumble.metal-bunker.info"  # murmur server
+#HOST = "88.198.142.94"  # murmur server
+HOST = "localhost"  # murmur server
 PORT = 64738  # murmur port
 USER = "vreji"  # mumur user
 PASSWORD = ""  # mumur user
-CHANNEL = "lojban"  # channel to move in ("" = root)
+CHANNEL = "alga"  # channel to move in ("" = root)
 
 USER_COUNT = 1  # start to record with how many connected users (recorder not included)
 
@@ -42,7 +43,7 @@ ENCODER = "oggenc --raw --raw-bits=16 --raw-chan=2 --raw-rate=48000 --quality=4 
 #ENCODER = "ffmpeg -f s16le -ar 48000 -ac 2 -i - -c:a libmp3lame -ab 96k -ac 1 -ar 22050 -f rtp rtp://localhost:1935/"
 
 # comment to be shown in mumble for the recorder user
-COMMENT_SUFFIX = " .i kakne co cpacu lo vreji la'o zoi. <a href=\"http://zbaga.ax.lt/mumble/\">http://zbaga.ax.lt/mumble/</a> .zoi"
+COMMENT_SUFFIX = " .i kakne co cpacu lo vreji la'o zoi. <a href=\"http://zbagazasni.ax.lt/mumble/\">http://zbagazasni.ax.lt/mumble/</a> .zoi"
 #COMMENT_SUFFIX = "<br>/start:forced" + \
 #                 "<br>/stop:blocked" + \
 #                 "<br>/auto[=x]:Automatic start-stop (when x users connected)" + \
@@ -58,4 +59,4 @@ STOP_BITMAP = "stop.png"
 # prevent to create multiple chapters too fast
 CHAPTER_MIN_INTERVAL = 10
 
-autotext = "vreji zmiku .i ca lo nu su'o %i da jorne cu ca'o snaveizba"
+autotext = "vreji zmiku .i va'o lo nu su'o %i da jorne cu ca'o snaveizba"
